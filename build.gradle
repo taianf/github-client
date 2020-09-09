@@ -1,0 +1,85 @@
+buildscript {
+    repositories {
+        google()
+        gradlePluginPortal()
+        jcenter()
+        mavenCentral()
+        maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+        maven { url "https://kotlin.bintray.com/kotlinx" }
+        maven { url "https://kotlin.bintray.com/ktor" }
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+    }
+    dependencies {
+        classpath "com.google.cloud.tools:appengine-gradle-plugin:$appengine_plugin_version"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
+    }
+}
+
+apply plugin: "application"
+apply plugin: "com.google.cloud.tools.appengine"
+apply plugin: "java"
+apply plugin: "kotlin"
+apply plugin: "kotlinx-serialization"
+apply plugin: "war"
+
+mainClassName = "io.ktor.server.netty.EngineMain"
+sourceCompatibility = java_compatibility
+targetCompatibility = java_compatibility
+
+sourceSets {
+    main.kotlin.srcDirs += "src/main/kotlin"
+    main.resources.srcDirs += "src/main/resources"
+    test.kotlin.srcDirs += "src/test/kotlin"
+    test.resources.srcDirs += "src/test/resources"
+}
+
+repositories {
+    google()
+    gradlePluginPortal()
+    jcenter()
+    mavenCentral()
+    maven { url "https://dl.bintray.com/kotlin/kotlinx" }
+    maven { url "https://kotlin.bintray.com/kotlinx" }
+    maven { url "https://kotlin.bintray.com/ktor" }
+    maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "io.ktor:ktor-html-builder:$ktor_version"
+    implementation "io.ktor:ktor-locations:$ktor_version"
+    implementation "io.ktor:ktor-metrics:$ktor_version"
+    implementation "io.ktor:ktor-serialization:$ktor_version"
+    implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-server-host-common:$ktor_version"
+    implementation "io.ktor:ktor-server-netty:$ktor_version"
+    implementation "io.ktor:ktor-server-servlet:$ktor_version"
+    implementation "com.google.cloud:google-cloud-logging-logback:$gce_logback_version"
+
+    providedCompile "com.google.appengine:appengine:$appengine_version"
+    testImplementation "io.ktor:ktor-server-tests:$ktor_version"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.4.2"
+}
+
+appengineDeploy.dependsOn test
+appengineStage.dependsOn test
+
+appengine {
+    deploy {
+        projectId = "GCLOUD_CONFIG"
+        version = "GCLOUD_CONFIG"
+    }
+    run {
+        jvmFlags = ["-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"]
+        automaticRestart = true
+    }
+}
+
+test {
+    useJUnit()
+    testLogging.showStandardStreams = true
+    afterTest { final descriptor, final result ->
+        logger.lifecycle("" + descriptor + ": " + result)
+    }
+}
