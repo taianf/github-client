@@ -80,6 +80,7 @@ test {
     useJUnit()
     testLogging.showStandardStreams = true
     afterTest { final descriptor, final result ->
+        //noinspection GroovyAssignabilityCheck
         logger.lifecycle("" + descriptor + ": " + result)
     }
 }
