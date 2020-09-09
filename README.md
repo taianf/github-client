@@ -1,30 +1,36 @@
-# Github Client - tags for repositories
+# Cliente Github - etiquetas para os repositórios
 
-This web app allows you to tag your starred repositories.
+Esta aplicação web permite que você coloque etiquetas nos repositórios que você colocou estrela.
 
-## How to run this app
+## Como executar este aplicativo
 
-The following scripts can install Google App Engine SDK automatically, but you may need to manually install the Google App Engine SDK if any problem occurs in your system.
+Os passos a seguir podem instalar o SDK do Google App Engine automaticamente, mas talvez você precise instalar o SDK manualmente se ocorrer algum problema no seu sistema.
 
-### How to run locally
+### Como executar localmente
 
-To run this application locally:
+Para executar esta aplicação localmente:
 
 ```
 ./gradle appengineRun
 ```
 
-### How to run tests
+Para ativar o hot-reload, execute isso em outro terminal enquanto a aplicação estiver rodando:
 
-To test this application:
+```
+./gradle -t build
+```
+
+### Como executar testes
+
+Para executar os testes dessa aplicação:
 
 ```
 ./gradle test
 ```
 
-### How to deploy locally
+### Como realizar o deploy
 
-To deploy in your Google account:
+Para fazer o deploy na sua conta Google:
 
 ```
 ./gradle appengineDeploy

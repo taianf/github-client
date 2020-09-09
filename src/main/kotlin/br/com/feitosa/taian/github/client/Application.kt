@@ -6,12 +6,21 @@ import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.html.*
 import io.ktor.routing.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import kotlinx.html.body
 import kotlinx.html.head
 import kotlinx.html.p
 import kotlinx.html.title
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>) {
+    embeddedServer(
+        Netty,
+        watchPaths = listOf("github-client"),
+        port = 8080,
+        module = Application::main
+    ).apply { start(true) }
+}
 
 fun Application.main(testing: Boolean = false) {
     // This adds Date and Server headers to each response, and allows custom additional headers
