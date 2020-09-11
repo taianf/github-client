@@ -46,7 +46,9 @@ repositories {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    implementation "com.google.cloud:google-cloud-datastore:$google_cloud_datastore_version"
+    implementation "com.google.cloud:google-cloud-logging-logback:$gce_logback_version"
+    implementation "io.ktor:ktor-client-apache:$ktor_version"
     implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "io.ktor:ktor-locations:$ktor_version"
     implementation "io.ktor:ktor-metrics:$ktor_version"
@@ -55,11 +57,14 @@ dependencies {
     implementation "io.ktor:ktor-server-host-common:$ktor_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-server-servlet:$ktor_version"
-    implementation "com.google.cloud:google-cloud-logging-logback:$gce_logback_version"
+    implementation "io.ktor:ktor-websockets:$ktor_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 
     providedCompile "com.google.appengine:appengine:$appengine_version"
+
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
-    testImplementation "org.junit.jupiter:junit-jupiter:5.4.2"
+    testImplementation "org.assertj:assertj-core:$assertj_version"
+    testImplementation "org.junit.jupiter:junit-jupiter:$junit_version"
 }
 
 appengineDeploy.dependsOn test
