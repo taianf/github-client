@@ -1,11 +1,15 @@
 package br.com.feitosa.taian.github.client.database
 
+import br.com.feitosa.taian.github.client.constants.*
 import com.google.cloud.datastore.*
 import io.ktor.auth.*
 
-fun checkUser(cred: UserPasswordCredential): Boolean {
-    cred.name
-    return true
+fun checkUser(cred: UserPasswordCredential): UserIdPrincipal? {
+    return if ((cred.name == TestCredentials.USERNAME && cred.password == TestCredentials.PASSWORD)) {
+        UserIdPrincipal(cred.name)
+    } else {
+        null
+    }
 }
 
 object QuickstartSample {

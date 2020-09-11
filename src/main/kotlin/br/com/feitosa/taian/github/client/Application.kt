@@ -86,10 +86,7 @@ private fun Authentication.Configuration.configureFormAuth() {
         validate { cred: UserPasswordCredential ->
             // Realistically you'd look up the user in a database or something here; this is just a toy example.
             // The values here will be whatever was submitted in the form.
-            if (checkUser(cred))
-                UserIdPrincipal(cred.name)
-            else
-                null
+            checkUser(cred)
         }
     }
 }
