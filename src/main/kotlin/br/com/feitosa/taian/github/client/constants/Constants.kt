@@ -1,13 +1,7 @@
 package br.com.feitosa.taian.github.client.constants
 
-object FormFields {
-    const val USERNAME: String = "username"
-    const val PASSWORD: String = "password"
-}
-
 object AuthName {
     const val SESSION: String = "session"
-    const val FORM: String = "form"
 }
 
 object CommonRoutes {
@@ -18,10 +12,5 @@ object CommonRoutes {
 
 object Cookies {
     const val AUTH_COOKIE: String = "auth"
-}
-
-object TestCredentials {
-    const val USERNAME: String = "foo"
-    const val PASSWORD: String = "bar"
 }
 

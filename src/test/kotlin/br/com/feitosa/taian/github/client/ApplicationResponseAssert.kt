@@ -6,13 +6,6 @@ import org.assertj.core.api.*
 
 class ApplicationResponseAssert(response: ApplicationResponse) :
     AbstractAssert<ApplicationResponseAssert, ApplicationResponse>(response, ApplicationResponseAssert::class.java) {
-    fun hasStatus(statusCode: HttpStatusCode): ApplicationResponseAssert {
-        isNotNull
-
-        checkStatusCode(statusCode)
-
-        return this
-    }
 
     fun redirectsTo(url: String, statusCode: HttpStatusCode = HttpStatusCode.Found): ApplicationResponseAssert {
         require(statusCode.value in 300..399) { "Asserted status code must be in 3XX range! (was ${statusCode.value})" }

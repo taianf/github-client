@@ -48,6 +48,7 @@ repositories {
 dependencies {
     implementation "com.google.cloud:google-cloud-datastore:$google_cloud_datastore_version"
     implementation "com.google.cloud:google-cloud-logging-logback:$gce_logback_version"
+    implementation "com.google.firebase:firebase-admin:6.8.1"
     implementation "io.ktor:ktor-client-apache:$ktor_version"
     implementation "io.ktor:ktor-html-builder:$ktor_version"
     implementation "io.ktor:ktor-locations:$ktor_version"
