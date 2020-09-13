@@ -56,7 +56,7 @@ fun Application.main(testing: Boolean = false) {
 }
 
 fun configureFirebase() {
-    val databaseUrl = System.getenv("FIREBASE_DATABASE") ?: "https://github-client-289022.firebaseio.com/"
+    val databaseUrl = System.getenv("FIREBASE_DATABASE") ?: ""
     val options = FirebaseOptions.Builder()
         .setCredentials(GoogleCredentials.getApplicationDefault())
         .setDatabaseUrl(databaseUrl)

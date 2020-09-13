@@ -13,4 +13,3 @@ object CommonRoutes {
 object Cookies {
     const val AUTH_COOKIE: String = "auth"
 }
-

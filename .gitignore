@@ -35,3 +35,6 @@ out/
 
 # IDE files
 .idea
+
+# Environment file
+/app.env

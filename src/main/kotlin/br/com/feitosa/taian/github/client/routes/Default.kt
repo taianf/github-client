@@ -32,11 +32,11 @@ internal fun Routing.loginRoute() {
             if (idToken.isNullOrBlank()) {
                 getLoginPage()
             } else {
-                val authenticateToken = authenticateToken(idToken)
-                if (authenticateToken == null) {
+                val firebaseToken = authenticateToken(idToken)
+                if (firebaseToken == null) {
                     getLoginPage()
                 } else {
-                    val name = authenticateToken.name
+                    val name = firebaseToken.name ?: "<user-without-name>"
                     val principal = UserIdPrincipal(name)
                     call.sessions.set(principal)
                     call.respondRedirect(CommonRoutes.PROFILE)
