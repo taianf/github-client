@@ -16,7 +16,6 @@
 'use strict';
 
 window.addEventListener('load', function () {
-
   var firebaseConfig = {
     apiKey: "AIzaSyAU0EMBpxyD6UAzMYe3dwichHX3Z1TW01M",
     authDomain: "github-client-289022.firebaseapp.com",
@@ -29,56 +28,59 @@ window.addEventListener('load', function () {
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
-//  firebase.analytics();
-  
-  // [START gae_python38_auth_signout]
-  document.getElementById('sign-out').onclick = function () {
-    firebase.auth().signOut();
-    location.href = "/logout";
-  };
-  // [END gae_python38_auth_signout]
-
-  // [START gae_python38_auth_UIconfig_variable]
-  // FirebaseUI config.
-  var uiConfig = {
-    signInSuccessUrl: '/',
-    signInOptions: [
-      // Remove any lines corresponding to providers you did not check in
-      // the Firebase console.
-      firebase.auth.GithubAuthProvider.PROVIDER_ID
-    ],
-    // Terms of service url.
-    // tosUrl: '<your-tos-url>'
-  };
-  // [END gae_python38_auth_UIconfig_variable]
-
-  // [START gae_python38_auth_request]
-  firebase.auth().onAuthStateChanged(function (user) {
-    if (user) {
-      // User is signed in, so display the "sign out" button and login info.
-      console.log(`Signed in as ${user.displayName} (${user.email})`);
-      user.getIdToken().then(function (token) {
-        // Add the token to the browser's cookies. The server will then be
-        // able to verify the token against the API.
-        // SECURITY NOTE: As cookies can easily be modified, only put the
-        // token (which is verified server-side) in a cookie; do not add other
-        // user information.
-        document.cookie = "token=" + token;
-      });
-    } else {
-      // User is signed out.
-      // Initialize the FirebaseUI Widget using Firebase.
-      var ui = new firebaseui.auth.AuthUI(firebase.auth());
-      // Show the Firebase login button.
-      ui.start('#firebaseui-auth-container', uiConfig);
-      // Update the login state indicators.
-      // Clear the token cookie.
-      document.cookie = "token=";
+  //  firebase.analytics();
+  firebase.auth().getRedirectResult().then(function (result) {
+    console.log("result");
+    console.log(result);
+    var githubToken;
+    var firebaseToken;
+    if (result.credential) {
+      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+      githubToken = result.credential.accessToken;
+      console.log("githubToken:");
+      console.log(githubToken);
+      // ...
     }
-  }, function (error) {
+    // The signed-in user info.
+    var user = result.user;
+    console.log("user:");
+    console.log(user);
+    if (user) {
+      const firebaseToken = user.getIdToken(true).then(function (firebaseToken) {
+        console.log("firebaseToken:");
+        console.log(firebaseToken);
+        document.cookie = "gitToken=" + githubToken;
+        document.cookie = "firebaseToken=" + firebaseToken;
+        location.reload();
+      });
+    }
+  }).catch(function (error) {
     console.log(error);
-    alert('Unable to log in: ' + error)
+    // Handle Errors here.
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    // The email of the user's account used.
+    var email = error.email;
+    // The firebase.auth.AuthCredential type that was used.
+    var credential = error.credential;
+    // ...
   });
+  //  document.getElementById("sign-in").onclick = authFunc
+  var signOutButton = document.getElementById("sign-out");
+  if (signOutButton !== null) {
+    signOutButton.onclick = function () {
+      firebase.auth().signOut();
+      location.href = "/logout";
+    };
+  }
+  var provider = new firebase.auth.GithubAuthProvider();
+  provider.addScope('repo');
+  var signInButton = document.getElementById("sign-in");
+  if (signInButton !== null) {
+    signInButton.onclick = function () {
+      firebase.auth().signInWithRedirect(provider);
+    };
+  }
 
   if (typeof firebase === 'undefined') {
     const msg = "Please paste the Firebase initialization snippet into index.html. See https://console.firebase.google.com > Overview > Add Firebase to your web app.";
@@ -86,7 +88,4 @@ window.addEventListener('load', function () {
     alert(msg);
   }
 
-  // [END gae_python38_auth_request]
 });
-
-

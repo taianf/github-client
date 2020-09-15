@@ -14,7 +14,7 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.getProfilePage(princ
         }
         body {
             div {
-                +"Hello, ${principal}!"
+                +"Hello, ${principal.name}!"
             }
             button {
                 id = "sign-out"

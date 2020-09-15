@@ -1,8 +1,11 @@
 package br.com.feitosa.taian.github.client.database
 
-import io.ktor.auth.*
+import com.google.firebase.auth.*
 
-fun getUserInfo(cred: UserPasswordCredential): UserIdPrincipal? {
-    TODO("Implement database read/write logic")
+internal fun getAuthenticatedToken(idToken: String): FirebaseToken? {
+    return try {
+        FirebaseAuth.getInstance().verifyIdToken(idToken)
+    } catch (ex: Exception) {
+        null
+    }
 }
-

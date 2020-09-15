@@ -15,9 +15,8 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.getLoginPage() {
             h1 { +"Github client app" }
             div { id = "firebaseui-auth-container" }
             button {
-                id = "sign-out"
-                hidden = true
-                +"Sign Out"
+                id = "sign-in"
+                +"Sign In with github"
             }
         }
     }
