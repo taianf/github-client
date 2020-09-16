@@ -29,11 +29,18 @@ window.addEventListener('load', function () {
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   //  firebase.analytics();
+  var provider = new firebase.auth.GithubAuthProvider();
+  provider.addScope('repo');
+  var signInButton = document.getElementById("sign-in");
+  if (signInButton !== null) {
+    signInButton.onclick = function () {
+      firebase.auth().signInWithRedirect(provider);
+    };
+  }
   firebase.auth().getRedirectResult().then(function (result) {
     console.log("result");
     console.log(result);
     var githubToken;
-    var firebaseToken;
     if (result.credential) {
       // This gives you a GitHub Access Token. You can use it to access the GitHub API.
       githubToken = result.credential.accessToken;
@@ -46,39 +53,26 @@ window.addEventListener('load', function () {
     console.log("user:");
     console.log(user);
     if (user) {
-      const firebaseToken = user.getIdToken(true).then(function (firebaseToken) {
+      user.getIdToken(true).then(function (firebaseToken) {
         console.log("firebaseToken:");
         console.log(firebaseToken);
-        document.cookie = "gitToken=" + githubToken;
+        document.cookie = "githubToken=" + githubToken;
         document.cookie = "firebaseToken=" + firebaseToken;
         location.reload();
       });
+    } else {
+      if (signInButton !== null) {
+        signInButton.hidden = false;
+      }
     }
   }).catch(function (error) {
     console.log(error);
-    // Handle Errors here.
-    var errorCode = error.code;
-    var errorMessage = error.message;
-    // The email of the user's account used.
-    var email = error.email;
-    // The firebase.auth.AuthCredential type that was used.
-    var credential = error.credential;
-    // ...
   });
-  //  document.getElementById("sign-in").onclick = authFunc
   var signOutButton = document.getElementById("sign-out");
   if (signOutButton !== null) {
     signOutButton.onclick = function () {
       firebase.auth().signOut();
       location.href = "/logout";
-    };
-  }
-  var provider = new firebase.auth.GithubAuthProvider();
-  provider.addScope('repo');
-  var signInButton = document.getElementById("sign-in");
-  if (signInButton !== null) {
-    signInButton.onclick = function () {
-      firebase.auth().signInWithRedirect(provider);
     };
   }
 

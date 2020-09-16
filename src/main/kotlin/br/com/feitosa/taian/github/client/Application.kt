@@ -2,6 +2,7 @@
 
 package br.com.feitosa.taian.github.client
 
+import br.com.feitosa.taian.github.client.authentication.*
 import br.com.feitosa.taian.github.client.constants.*
 import br.com.feitosa.taian.github.client.routes.*
 import com.google.auth.oauth2.*
@@ -74,7 +75,7 @@ fun configureFirebase() {
 }
 
 private fun Sessions.Configuration.configureAuthCookie() {
-    cookie<UserIdPrincipal>(
+    cookie<AppPrincipal>(
         // We set a cookie by this name upon login.
         Cookies.AUTH_COOKIE,
         // Stores session contents in memory...good for development only.
@@ -89,12 +90,12 @@ private fun Sessions.Configuration.configureAuthCookie() {
 }
 
 private fun Authentication.Configuration.configureSessionAuth() {
-    session<UserIdPrincipal>(AuthName.SESSION) {
+    session<AppPrincipal>(AuthName.SESSION) {
         challenge {
             // What to do if the user isn't authenticated
             call.respondRedirect("${CommonRoutes.LOGIN}?no")
         }
-        validate { session: UserIdPrincipal ->
+        validate { session: AppPrincipal ->
             // If you need to do additional validation on session data, you can do so here.
             session
         }

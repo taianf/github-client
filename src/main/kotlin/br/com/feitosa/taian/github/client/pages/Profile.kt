@@ -1,12 +1,12 @@
 package br.com.feitosa.taian.github.client.pages
 
+import br.com.feitosa.taian.github.client.authentication.*
 import io.ktor.application.*
-import io.ktor.auth.*
 import io.ktor.html.*
 import io.ktor.util.pipeline.*
 import kotlinx.html.*
 
-internal suspend fun PipelineContext<Unit, ApplicationCall>.getProfilePage(principal: UserIdPrincipal) {
+internal suspend fun PipelineContext<Unit, ApplicationCall>.getProfilePage(principal: AppPrincipal) {
     call.respondHtml {
         head {
             title = "Github client - User Settings"

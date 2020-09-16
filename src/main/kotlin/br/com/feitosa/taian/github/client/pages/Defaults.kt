@@ -12,9 +12,9 @@ internal fun HEAD.getDefaultHead() {
         rel = "stylesheet"
         type = "text/css"
     }
-    script { src = "/static/script.js" }
+    script { src = "/static/dist/script.min.js" }
     link {
-        href = "/static/style.css"
+        href = "/static/dist/style.min.css"
         rel = "stylesheet"
         type = "text/css"
     }

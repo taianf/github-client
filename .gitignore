@@ -38,3 +38,6 @@ out/
 
 # Environment file
 /app.env
+
+# Minified files
+/src/main/resources/static/dist/

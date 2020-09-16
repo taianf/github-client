@@ -1,3 +1,5 @@
+@file:Suppress("EXPERIMENTAL_API_USAGE")
+
 package br.com.feitosa.taian.github.client
 
 import io.ktor.http.*

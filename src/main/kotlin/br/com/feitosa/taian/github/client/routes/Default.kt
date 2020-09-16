@@ -1,5 +1,6 @@
 package br.com.feitosa.taian.github.client.routes
 
+import br.com.feitosa.taian.github.client.authentication.*
 import br.com.feitosa.taian.github.client.constants.*
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -13,7 +14,7 @@ internal fun Routing.homepageRoute() {
         get("/") {
             // Redirect user to login if they're not already logged in.
             // Otherwise redirect them to a page that requires auth.
-            if (call.principal<UserIdPrincipal>() == null) {
+            if (call.principal<AppPrincipal>() == null) {
                 call.respondRedirect(CommonRoutes.LOGIN)
             } else {
                 call.respondRedirect(CommonRoutes.PROFILE)
