@@ -1,18 +1,18 @@
-import com.google.cloud.tools.gradle.appengine.standard.AppEngineStandardExtension
-import com.google.javascript.jscomp.CompilationLevel
-import org.padler.gradle.minify.*
+import com.google.cloud.tools.gradle.appengine.core.*
+import com.google.cloud.tools.gradle.appengine.standard.*
+import com.google.javascript.jscomp.*
 
-val appengine_plugin_version: String by project
-val appengine_version: String by project
-val assertj_version: String by project
-val firebase_version: String by project
-val gce_logback_version: String by project
-val google_cloud_datastore_version: String by project
-val junit_version: String by project
-val kotlin_serialization: String by project
-val kotlin_version: String by project
-val ktor_version: String by project
-val logback_version: String by project
+val appengineVersion: String by project
+val assertjVersion: String by project
+val firebaseVersion: String by project
+val gceLogbackVersion: String by project
+val googleCloudDatastoreVersion: String by project
+val junitVersion: String by project
+val kotlinSerialization: String by project
+val kotlinVersion: String by project
+val ktorVersion: String by project
+val logbackVersion: String by project
+val minifyVersion: String by project
 
 buildscript {
     repositories {
@@ -77,44 +77,35 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.cloud:google-cloud-datastore:$google_cloud_datastore_version")
-    implementation("com.google.cloud:google-cloud-logging-logback:$gce_logback_version")
-    implementation("com.google.firebase:firebase-admin:$firebase_version")
-    implementation("io.ktor:ktor-client-apache:$ktor_version")
-    implementation("io.ktor:ktor-html-builder:$ktor_version")
-    implementation("io.ktor:ktor-locations:$ktor_version")
-    implementation("io.ktor:ktor-metrics:$ktor_version")
-    implementation("io.ktor:ktor-serialization:$ktor_version")
-    implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-server-host-common:$ktor_version")
-    implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-server-servlet:$ktor_version")
-    implementation("io.ktor:ktor-websockets:$ktor_version")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version")
-    implementation("org.padler.gradle.minify:gradle-minify-plugin:1.6.0")
+    implementation("com.google.cloud:google-cloud-datastore:$googleCloudDatastoreVersion")
+    implementation("com.google.cloud:google-cloud-logging-logback:$gceLogbackVersion")
+    implementation("com.google.firebase:firebase-admin:$firebaseVersion")
+    implementation("io.ktor:ktor-client-apache:$ktorVersion")
+    implementation("io.ktor:ktor-html-builder:$ktorVersion")
+    implementation("io.ktor:ktor-locations:$ktorVersion")
+    implementation("io.ktor:ktor-metrics:$ktorVersion")
+    implementation("io.ktor:ktor-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-host-common:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-servlet:$ktorVersion")
+    implementation("io.ktor:ktor-websockets:$ktorVersion")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
+    implementation("org.padler.gradle.minify:gradle-minify-plugin:$minifyVersion")
 
-    providedCompile("com.google.appengine:appengine:$appengine_version")
+    providedCompile("com.google.appengine:appengine:$appengineVersion")
 
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
-    testImplementation("org.assertj:assertj-core:$assertj_version")
-    testImplementation("org.junit.jupiter:junit-jupiter:$junit_version")
+    testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
 }
-
-//appengineDeploy {
-//    dependsOn = test
-//}
-//appengineStage {
-//    dependsOn = test
-//}
 
 configure<AppEngineStandardExtension> {
     deploy {
         projectId = "GCLOUD_CONFIG"
         version = "GCLOUD_CONFIG"
-//        dependsOn("test")
     }
     stage {
-//        dependsOn("test")
     }
     run {
         jvmFlags = listOf("-Xdebug", "-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005")
@@ -133,9 +124,21 @@ tasks {
     test {
         useJUnit()
         testLogging.showStandardStreams = true
-        fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
-            logger.lifecycle("" + testDescriptor + ": " + result)
-        }
+        addTestListener(object : TestListener {
+            override fun beforeTest(p0: TestDescriptor?) = Unit
+            override fun beforeSuite(p0: TestDescriptor?) = Unit
+            override fun afterTest(desc: TestDescriptor, result: TestResult) {
+                logger.lifecycle("$desc: $result")
+            }
+
+            override fun afterSuite(desc: TestDescriptor, result: TestResult) = Unit
+        })
+    }
+    named<DeployTask>("appengineDeploy") {
+        dependsOn("test")
+    }
+    named<StageStandardTask>("appengineStage") {
+        dependsOn("test")
     }
     build {
         dependsOn("minify")
