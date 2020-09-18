@@ -32,6 +32,7 @@ window.addEventListener('load', function () {
   var provider = new firebase.auth.GithubAuthProvider();
   provider.addScope('repo');
   var signInButton = document.getElementById("sign-in");
+  var loadingDiv = document.getElementById("loading-div");
   if (signInButton !== null) {
     signInButton.onclick = function () {
       firebase.auth().signInWithRedirect(provider);
@@ -63,6 +64,9 @@ window.addEventListener('load', function () {
     } else {
       if (signInButton !== null) {
         signInButton.hidden = false;
+      }
+      if (loadingDiv !== null) {
+        loadingDiv.hidden = true;
       }
     }
   }).catch(function (error) {
