@@ -58,7 +58,7 @@ fun Application.main(testing: Boolean = false) {
 
 fun configureFirebase() {
     val databaseUrl = System.getenv("FIREBASE_DATABASE") ?: ""
-    val options = FirebaseOptions.Builder()
+    val options = FirebaseOptions.builder()
         .setCredentials(GoogleCredentials.getApplicationDefault())
         .setDatabaseUrl(databaseUrl)
         .build()

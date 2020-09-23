@@ -20,6 +20,19 @@ To enable hot-reload, execute this in another terminal while the application is 
 ./gradle -t build
 ```
 
+### Hot to run the database in local mode
+
+```
+gcloud beta emulators datastore env-init > set_vars.cmd && set_vars.cmd
+gcloud beta emulators datastore start
+```
+
+To run without persisting data:
+
+```
+gcloud beta emulators datastore start --no-store-on-disk
+```
+
 ### How to run tests
 
 To run the tests in this application:
