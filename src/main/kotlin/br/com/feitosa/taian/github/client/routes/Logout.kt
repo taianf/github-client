@@ -10,7 +10,7 @@ import io.ktor.sessions.*
 internal fun Routing.logoutRoute() {
     get(CommonRoutes.LOGOUT) {
         call.sessions.clear<AppPrincipal>()
-        call.response.cookies.appendExpired("githubToken")
+        call.response.cookies.appendExpired("githubUser")
         call.response.cookies.appendExpired("firebaseToken")
         call.respondRedirect(CommonRoutes.LOGIN)
     }

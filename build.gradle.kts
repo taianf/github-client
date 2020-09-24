@@ -5,6 +5,7 @@ import com.google.javascript.jscomp.*
 val appengineVersion: String by project
 val assertjVersion: String by project
 val firebaseVersion: String by project
+val fuelVersion: String by project
 val gceLogbackVersion: String by project
 val googleCloudDatastoreVersion: String by project
 val junitVersion: String by project
@@ -92,6 +93,7 @@ dependencies {
     implementation("io.ktor:ktor-websockets:$ktorVersion")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("org.padler.gradle.minify:gradle-minify-plugin:$minifyVersion")
+    implementation("com.github.kittinunf.fuel:fuel:$fuelVersion")
 
     providedCompile("com.google.appengine:appengine:$appengineVersion")
 

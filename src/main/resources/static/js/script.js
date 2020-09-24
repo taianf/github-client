@@ -39,25 +39,15 @@ window.addEventListener('load', function () {
     };
   }
   firebase.auth().getRedirectResult().then(function (result) {
-    console.log("result");
-    console.log(result);
-    var githubToken;
+    var githubUser;
     if (result.credential) {
-      // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-      githubToken = result.credential.accessToken;
-      console.log("githubToken:");
-      console.log(githubToken);
-      // ...
+      githubUser = result.additionalUserInfo.username;
     }
     // The signed-in user info.
     var user = result.user;
-    console.log("user:");
-    console.log(user);
     if (user) {
       user.getIdToken(true).then(function (firebaseToken) {
-        console.log("firebaseToken:");
-        console.log(firebaseToken);
-        document.cookie = "githubToken=" + githubToken;
+        document.cookie = "githubUser=" + githubUser;
         document.cookie = "firebaseToken=" + firebaseToken;
         location.reload();
       });

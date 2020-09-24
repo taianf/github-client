@@ -1,11 +1,11 @@
 package br.com.feitosa.taian.github.client.database
 
 import br.com.feitosa.taian.github.client.authentication.*
+import com.github.kittinunf.fuel.*
+import com.github.kittinunf.result.*
 import com.google.cloud.datastore.*
-import com.google.firebase.auth.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-
 
 @Serializable
 data class Repository(
@@ -16,12 +16,12 @@ data class Repository(
 
 @Serializable
 data class AppProfile(
-    val name: String = "",
+    val userName: String = "",
     val email: String = "",
     val repositories: List<Repository> = mutableListOf(),
 ) {
     constructor(appPrincipal: AppPrincipal) : this(
-        appPrincipal.name,
+        appPrincipal.userName,
         appPrincipal.email,
     )
 }
@@ -30,25 +30,31 @@ object DatabaseManager {
     val instance: Datastore = DatastoreOptions.getDefaultInstance().service
 }
 
-internal fun getAuthenticatedToken(idToken: String): FirebaseToken? {
-    return try {
-        FirebaseAuth.getInstance().verifyIdToken(idToken)
-    } catch (ex: Exception) {
-        null
+fun getGithubStarredRepos(userName: String): List<Repository> {
+    val url = "https://api.github.com/users/${userName}/starred"
+    val (_, _, result) = url.httpGet().response()
+    when (result) {
+        is Result.Failure -> {
+            val ex = result.getException()
+            println(ex)
+        }
+        is Result.Success -> {
+            val data = Json.parseToJsonElement(String(result.get()))
+            return data.jsonArray.map {
+                Repository(it.jsonObject["html_url"].toString(), it.jsonObject["name"].toString())
+            }
+        }
     }
+    return mutableListOf()
 }
 
-internal fun createUserData(principal: AppPrincipal) {
+internal fun createUserData(principal: AppPrincipal, repositories: List<Repository>) {
     val uid = principal.uid
-    val appProfile = AppProfile(
-        principal.name,
-        principal.email,
-    )
     val userKey: Key = DatabaseManager.instance.newKeyFactory().setKind("userProfile").newKey(uid)
     val userData = Entity.newBuilder(userKey)
-        .set("name", appProfile.name)
-        .set("email", appProfile.email)
-        .set("repositories", Json.encodeToString(appProfile.repositories))
+        .set("userName", principal.userName)
+        .set("email", principal.email)
+        .set("repositories", Json.encodeToString(repositories))
         .build()
     DatabaseManager.instance.put(userData)
 }
@@ -57,17 +63,26 @@ internal fun readUserData(principal: AppPrincipal): AppProfile {
     val uid = principal.uid
     val userKey: Key = DatabaseManager.instance.newKeyFactory().setKind("userProfile").newKey(uid)
     val userData = DatabaseManager.instance.get(userKey)
+    val repositoriesFromGithub: List<Repository> = getGithubStarredRepos(principal.userName)
     return if (userData == null) {
-        createUserData(principal)
+        createUserData(principal, repositoriesFromGithub)
         AppProfile(principal)
     } else {
+        val repositoriesFromDatabase = Json.decodeFromString<List<Repository>>(userData.getString("repositories"))
+        val repos: List<Repository> = repositoriesFromGithub.map { repoFromGithub ->
+            val repository: Repository? = repositoriesFromDatabase.firstOrNull { repoFromDB ->
+                repoFromDB.url == repoFromGithub.url
+            }
+            Repository(repoFromGithub.url, repoFromGithub.name, repository?.tags ?: mutableListOf())
+        }
         AppProfile(
-            userData.getString("name"),
+            userData.getString("userName"),
             userData.getString("email"),
-            Json.decodeFromString(userData.getString("repositories")),
+            repos,
         )
     }
 }
+
 //
 //internal fun updateUserData(principal: AppPrincipal): Any {
 //    val uid = principal.uid

@@ -16,17 +16,17 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.getProfilePage(princ
         }
         body {
             div {
-                +"Hello, ${userData.email}!"
+                +"Hello, ${userData.userName}!"
             }
             div {
-                p { +"Repositories:" }
+                h1 { +"Repositories:" }
                 div {
-                    userData.repositories.forEach {
-                        p { +it.name }
+                    userData.repositories.forEach { repository ->
+                        h4 { +repository.name }
                         ul {
-                            it.tags.forEach {
+                            repository.tags.forEach { tag ->
                                 li {
-                                    +it
+                                    +tag
                                 }
                             }
                         }

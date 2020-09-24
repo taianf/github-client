@@ -12,11 +12,11 @@ internal fun Routing.loginRoute() {
     route(CommonRoutes.LOGIN) {
         get {
             val firebaseToken = call.request.cookies["firebaseToken"]
-            val githubToken = call.request.cookies["githubToken"]
-            if (firebaseToken.isNullOrBlank() || githubToken.isNullOrBlank()) {
+            val githubUser = call.request.cookies["githubUser"]
+            if (firebaseToken.isNullOrBlank() || githubUser.isNullOrBlank()) {
                 getLoginPage()
             } else {
-                val appPrincipal = getAppPrincipal(firebaseToken, githubToken)
+                val appPrincipal = getAppPrincipal(firebaseToken, githubUser)
                 if (appPrincipal == null) {
                     getLoginPage()
                 } else {
