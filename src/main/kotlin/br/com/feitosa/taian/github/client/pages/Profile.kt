@@ -23,10 +23,28 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.getProfilePage(princ
                 div {
                     userData.repositories.forEach { repository ->
                         h4 { +repository.name }
+                        input {
+                            type = InputType.text
+                            id = "input-$repository"
+                            placeholder = "new tag..."
+                        }
+                        span {
+                            button {
+                                onClick = "addTag()"
+                                id = "addBtn-$repository"
+                                +"Add tag"
+                            }
+                        }
                         ul {
+                            +"Tags:"
                             repository.tags.forEach { tag ->
                                 li {
                                     +tag
+                                }
+                                button {
+                                    onClick = "removeTag()"
+                                    id = "removeBtn-$repository-$tag"
+                                    +"Remove tag"
                                 }
                             }
                         }
