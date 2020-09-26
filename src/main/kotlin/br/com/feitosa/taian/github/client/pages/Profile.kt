@@ -42,7 +42,7 @@ internal suspend fun PipelineContext<Unit, ApplicationCall>.getProfilePage(princ
                                     +tag
                                 }
                                 button {
-                                    onClick = "removeTag()"
+                                    onClick = "removeTag(removeBtn-$repository-$tag)"
                                     id = "removeBtn-$repository-$tag"
                                     +"Remove tag"
                                 }

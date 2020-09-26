@@ -21,10 +21,11 @@ data class AppProfile(
     val email: String,
     val repositories: Set<Repository> = mutableSetOf(),
 ) {
-    constructor(uid: String, appPrincipal: AppPrincipal) : this(
+    constructor(uid: String, appPrincipal: AppPrincipal, repositories: Set<Repository>) : this(
         uid,
         appPrincipal.userName,
         appPrincipal.email,
+        repositories
     )
 }
 
@@ -50,12 +51,18 @@ internal fun getGithubStarredRepos(userName: String): Set<Repository> {
     return mutableSetOf()
 }
 
-internal fun createUserData(principal: AppPrincipal, repositories: Set<Repository>) {
-    val uid = principal.uid
+internal fun createUserData(
+    principal: AppPrincipal? = null,
+    appProfile: AppProfile? = null,
+    repositories: Set<Repository>,
+) {
+    val uid = principal?.uid ?: appProfile?.uid ?: error("UID is mandatory!")
+    val userName = principal?.userName ?: appProfile?.userName ?: ""
+    val email = principal?.email ?: appProfile?.email ?: ""
     val userKey: Key = DatabaseManager.instance.newKeyFactory().setKind("userProfile").newKey(uid)
     val userData = Entity.newBuilder(userKey)
-        .set("userName", principal.userName)
-        .set("email", principal.email)
+        .set("userName", userName)
+        .set("email", email)
         .set("repositories", Json.encodeToString(repositories))
         .build()
     DatabaseManager.instance.put(userData)
@@ -66,10 +73,10 @@ internal fun readUserData(principal: AppPrincipal): AppProfile {
     val userData = DatabaseManager.instance.get(getUserKey(uid))
     val repositoriesFromGithub: Set<Repository> = getGithubStarredRepos(principal.userName)
     return if (userData == null) {
-        createUserData(principal, repositoriesFromGithub)
-        AppProfile(uid, principal)
+        createUserData(principal, repositories = repositoriesFromGithub)
+        AppProfile(uid, principal, repositoriesFromGithub)
     } else {
-        val repositoriesFromDatabase = Json.decodeFromString<List<Repository>>(userData.getString("repositories"))
+        val repositoriesFromDatabase = Json.decodeFromString<Set<Repository>>(userData.getString("repositories"))
         val repos: Set<Repository> = repositoriesFromGithub.map { repoFromGithub ->
             val repository: Repository? = repositoriesFromDatabase.firstOrNull { repoFromDB ->
                 repoFromDB.url == repoFromGithub.url
@@ -84,23 +91,21 @@ private fun getUserKey(uid: String): Key {
     return DatabaseManager.instance.newKeyFactory().setKind("userProfile").newKey(uid)
 }
 
-internal fun insertTag(appProfile: AppProfile) {
+internal fun insertTag(appProfile: AppProfile, repositoryUrl: String, tag: String) {
     val uid = appProfile.uid
     val userKey = getUserKey(uid)
     val userData = DatabaseManager.instance.get(userKey)
     val appProfileFromUserData = getAppProfileFromUserData(uid, userData)
-    val newRepos: Set<Repository> = appProfile.repositories.map { repository ->
-        val oldTags: Set<String> =
-            appProfileFromUserData.repositories.firstOrNull { it.url == repository.url }?.tags ?: mutableSetOf()
-        val mergedTags = repository.tags + oldTags
-        Repository(repository.url, repository.name, mergedTags)
+
+    val newRepos = appProfileFromUserData.repositories.map { repository ->
+        if (repository.url == repositoryUrl) {
+            Repository(repositoryUrl, repository.name, repository.tags + tag)
+        } else {
+            repository
+        }
     }.toSet()
-    val newUserData = Entity.newBuilder(userKey)
-        .set("userName", appProfile.userName)
-        .set("email", appProfile.email)
-        .set("repositories", Json.encodeToString(newRepos))
-        .build()
-    DatabaseManager.instance.put(newUserData)
+
+    createUserData(principal = null, appProfile, repositories = newRepos)
 }
 
 //internal fun removeTag(appProfile: AppProfile): Any {
